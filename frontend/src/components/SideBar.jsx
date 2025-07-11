@@ -29,7 +29,7 @@ function SideBar() {
     try {
       await axios.get(`${serverUrl}/api/auth/logout`, { withCredentials: true });
       dispatch(setUserData(null));
-      dispatch(setOtherUsers(null));
+      dispatch(setOtherUsers([]));
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
@@ -42,7 +42,7 @@ function SideBar() {
         `${serverUrl}/api/user/search?query=${input}`,
         { withCredentials: true }
       );
-      dispatch(setSearchData(result.data));
+      dispatch(setSearchData(Array.isArray(result.data) ? result.data : []));
     } catch (error) {
       console.error("Search failed:", error);
     }
@@ -67,9 +67,9 @@ function SideBar() {
       </div>
 
       {/* Search Results */}
-      {input && (
+      {input && Array.isArray(searchData) && (
         <div className="absolute top-[250px] bg-white w-full h-[500px] overflow-y-auto flex flex-col gap-[10px] z-[150] shadow-lg pt-[20px]">
-          {searchData?.map((user) => (
+          {searchData.map((user) => (
             <div
               key={user._id}
               className="w-[95%] h-[70px] flex items-center gap-[20px] px-[10px] hover:bg-[#e0e0e0] border-b-2 border-gray-400 cursor-pointer"
@@ -140,7 +140,8 @@ function SideBar() {
           )}
 
           {!search &&
-            otherUsers?.filter((u) => onlineUsers?.includes(u._id)).map((user) => (
+            Array.isArray(otherUsers) &&
+            otherUsers.filter((u) => onlineUsers?.includes(u._id)).map((user) => (
               <div
                 key={user._id}
                 className="relative rounded-full bg-white shadow-lg cursor-pointer mt-[10px]"
@@ -157,25 +158,26 @@ function SideBar() {
 
       {/* Other Users List */}
       <div className="w-full h-[50%] overflow-auto flex flex-col gap-[20px] items-center mt-[20px]">
-        {otherUsers?.map((user) => (
-          <div
-            key={user._id}
-            className="w-[95%] h-[60px] flex items-center gap-[20px] bg-white shadow-lg rounded-full hover:bg-[#e0e0e0] cursor-pointer px-4"
-            onClick={() => dispatch(setSelectedUser(user))}
-          >
-            <div className="relative rounded-full bg-white flex justify-center items-center">
-              <div className="w-[60px] h-[60px] rounded-full overflow-hidden">
-                <img src={user.image || dp} alt="" className="h-full w-full object-cover" />
+        {Array.isArray(otherUsers) &&
+          otherUsers.map((user) => (
+            <div
+              key={user._id}
+              className="w-[95%] h-[60px] flex items-center gap-[20px] bg-white shadow-lg rounded-full hover:bg-[#e0e0e0] cursor-pointer px-4"
+              onClick={() => dispatch(setSelectedUser(user))}
+            >
+              <div className="relative rounded-full bg-white flex justify-center items-center">
+                <div className="w-[60px] h-[60px] rounded-full overflow-hidden">
+                  <img src={user.image || dp} alt="" className="h-full w-full object-cover" />
+                </div>
+                {onlineUsers?.includes(user._id) && (
+                  <span className="w-[12px] h-[12px] rounded-full absolute bottom-[6px] right-[-1px] bg-[#3aff20] shadow-md"></span>
+                )}
               </div>
-              {onlineUsers?.includes(user._id) && (
-                <span className="w-[12px] h-[12px] rounded-full absolute bottom-[6px] right-[-1px] bg-[#3aff20] shadow-md"></span>
-              )}
+              <h1 className="text-gray-800 font-semibold text-[20px]">
+                {user.name || user.userName}
+              </h1>
             </div>
-            <h1 className="text-gray-800 font-semibold text-[20px]">
-              {user.name || user.userName}
-            </h1>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
