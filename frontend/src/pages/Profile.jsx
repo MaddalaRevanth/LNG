@@ -34,12 +34,21 @@ function Profile() {
       if (backendImage) {
         formData.append("image", backendImage);
       }
-      let result = await axios.put(`${serverUrl}/api/user/profile`, formData, { withCredentials: true });
+
+      const token = localStorage.getItem("token"); // ✅ Get token from localStorage
+
+      const result = await axios.put(`${serverUrl}/api/user/profile`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ Add token to headers
+        },
+        withCredentials: true,
+      });
+
       setSaving(false);
       dispatch(setUserData(result.data));
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.log("Profile update failed →", error?.response?.data || error);
       setSaving(false);
     }
   };
