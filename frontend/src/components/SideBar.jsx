@@ -125,4 +125,60 @@ function SideBar() {
               <input
                 type="text"
                 placeholder="Search users..."
-                c
+                className="w-full h-full text-[17px] outline-none border-0"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+              />
+              <RxCross2
+                className="w-[25px] h-[25px] cursor-pointer"
+                onClick={() => {
+                  setSearch(false);
+                  setInput("");
+                }}
+              />
+            </form>
+          )}
+
+          {!search &&
+            otherUsers?.filter((u) => onlineUsers?.includes(u._id)).map((user) => (
+              <div
+                key={user._id}
+                className="relative rounded-full bg-white shadow-lg cursor-pointer mt-[10px]"
+                onClick={() => dispatch(setSelectedUser(user))}
+              >
+                <div className="w-[60px] h-[60px] rounded-full overflow-hidden">
+                  <img src={user.image || dp} alt="" className="h-full w-full object-cover" />
+                </div>
+                <span className="w-[12px] h-[12px] rounded-full absolute bottom-[6px] right-[-1px] bg-[#3aff20] shadow-md"></span>
+              </div>
+            ))}
+        </div>
+      </div>
+
+      {/* Other Users List */}
+      <div className="w-full h-[50%] overflow-auto flex flex-col gap-[20px] items-center mt-[20px]">
+        {otherUsers?.map((user) => (
+          <div
+            key={user._id}
+            className="w-[95%] h-[60px] flex items-center gap-[20px] bg-white shadow-lg rounded-full hover:bg-[#e0e0e0] cursor-pointer px-4"
+            onClick={() => dispatch(setSelectedUser(user))}
+          >
+            <div className="relative rounded-full bg-white flex justify-center items-center">
+              <div className="w-[60px] h-[60px] rounded-full overflow-hidden">
+                <img src={user.image || dp} alt="" className="h-full w-full object-cover" />
+              </div>
+              {onlineUsers?.includes(user._id) && (
+                <span className="w-[12px] h-[12px] rounded-full absolute bottom-[6px] right-[-1px] bg-[#3aff20] shadow-md"></span>
+              )}
+            </div>
+            <h1 className="text-gray-800 font-semibold text-[20px]">
+              {user.name || user.userName}
+            </h1>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default SideBar;
