@@ -13,7 +13,10 @@ const port=process.env.PORT || 5000
 
 
 app.use(cors({
-    origin:"https://livenetworkandgames.netlify.app",
+     origin: [
+    "http://localhost:5173",
+    "https://livenetworkandgames.netlify.app"
+  ],
     credentials:true
 }))
 app.use(express.json())
