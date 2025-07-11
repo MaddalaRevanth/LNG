@@ -1,12 +1,14 @@
+import { createSlice } from "@reduxjs/toolkit";
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
     userData: null,
-    otherUsers: [], // ✅ should be an array
+    otherUsers: [],
     selectedUser: null,
     socket: null,
-    onlineUsers: [], // ✅ should be an array
-    searchData: [], // ✅ should be an array
+    onlineUsers: [],
+    searchData: [],
   },
   reducers: {
     setUserData: (state, action) => {
@@ -29,3 +31,14 @@ const userSlice = createSlice({
     },
   },
 });
+
+export const {
+  setUserData,
+  setOtherUsers,
+  setSelectedUser,
+  setSocket,
+  setOnlineUsers,
+  setSearchData,
+} = userSlice.actions;
+
+export default userSlice.reducer;
