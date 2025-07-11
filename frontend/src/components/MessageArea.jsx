@@ -12,6 +12,7 @@ import ReceiverMessage from "./ReceiverMessage";
 import axios from "axios";
 import { serverUrl } from "../main";
 import { setMessages } from "../redux/messageSlice";
+
 function MessageArea() {
   let { selectedUser, userData, socket } = useSelector((state) => state.user);
   let dispatch = useDispatch();
@@ -21,11 +22,13 @@ function MessageArea() {
   let [backendImage, setBackendImage] = useState(null);
   let image = useRef();
   let { messages } = useSelector((state) => state.message);
+
   const handleImage = (e) => {
     let file = e.target.files[0];
     setBackendImage(file);
     setFrontendImage(URL.createObjectURL(file));
   };
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (input.length == 0 && backendImage == null) {
@@ -50,10 +53,12 @@ function MessageArea() {
       console.log(error);
     }
   };
+
   const onEmojiClick = (emojiData) => {
     setInput((prevInput) => prevInput + emojiData.emoji);
     setShowPicker(false);
   };
+
   useEffect(() => {
     socket?.on("newMessage", (mess) => {
       dispatch(setMessages([...messages, mess]));
@@ -63,13 +68,13 @@ function MessageArea() {
 
   return (
     <div
-      className={`lg:w-[70%] relative   ${
+      className={`lg:w-[70%] relative ${
         selectedUser ? "flex" : "hidden"
-      } lg:flex  w-full h-full bg-slate-200 border-l-2 border-gray-300 overflow-hidden`}
+      } lg:flex w-full h-full bg-slate-200 border-l-2 border-gray-300 overflow-hidden`}
     >
       {selectedUser && (
         <div className="w-full h-[100vh] flex flex-col overflow-hidden gap-[20px] items-center">
-          <div className="w-full h-[100px] bg-[#1797c2] rounded-b-[30px] shadow-gray-400 shadow-lg gap-[20px] flex items-center px-[20px] ">
+          <div className="w-full h-[100px] bg-[#333333] rounded-b-[30px] shadow-gray-400 shadow-lg gap-[20px] flex items-center px-[20px] ">
             <div
               className="cursor-pointer"
               onClick={() => dispatch(setSelectedUser(null))}
@@ -88,7 +93,7 @@ function MessageArea() {
             </h1>
           </div>
 
-          <div className="w-full h-[70%] flex flex-col py-[30px]  px-[20px] overflow-auto gap-[20px] ">
+          <div className="w-full h-[70%] flex flex-col py-[30px] px-[20px] overflow-auto gap-[20px] ">
             {showPicker && (
               <div className="absolute bottom-[120px] left-[20px]">
                 <EmojiPicker
@@ -103,23 +108,32 @@ function MessageArea() {
             {messages &&
               messages.map((mess) =>
                 mess.sender == userData._id ? (
-                  <SenderMessage image={mess.image} message={mess.message} />
+                  <SenderMessage
+                    key={mess._id}
+                    image={mess.image}
+                    message={mess.message}
+                  />
                 ) : (
-                  <ReceiverMessage image={mess.image} message={mess.message} />
+                  <ReceiverMessage
+                    key={mess._id}
+                    image={mess.image}
+                    message={mess.message}
+                  />
                 )
               )}
           </div>
         </div>
       )}
+
       {selectedUser && (
-        <div className="w-full lg:w-[70%] h-[100px] fixed bottom-[20px] flex items-center justify-center ">
+        <div className="w-full lg:w-[70%] h-[100px] fixed bottom-[20px] flex items-center justify-center">
           <img
             src={frontendImage}
             alt=""
             className="w-[80px] absolute bottom-[100px] right-[20%] rounded-lg shadow-gray-400 shadow-lg"
           />
           <form
-            className="w-[95%] lg:w-[70%] h-[60px] bg-[rgb(23,151,194)] shadow-gray-400 shadow-lg rounded-full flex items-center gap-[20px] px-[20px] relative"
+            className="w-[95%] lg:w-[70%] h-[60px] bg-[#333333] shadow-gray-400 shadow-lg rounded-full flex items-center gap-[20px] px-[20px] relative"
             onSubmit={handleSendMessage}
           >
             <div onClick={() => setShowPicker((prev) => !prev)}>
@@ -150,11 +164,10 @@ function MessageArea() {
           </form>
         </div>
       )}
+
       {!selectedUser && (
         <div className="w-full h-full flex flex-col justify-center items-center">
-          <h1 className="text-gray-700 font-bold text-[50px]">
-            Welcome to LNG
-          </h1>
+          <h1 className="text-gray-700 font-bold text-[50px]">Welcome to LNG</h1>
           <span className="text-gray-700 font-semibold text-[30px]">
             Chat Friendly !
           </span>
