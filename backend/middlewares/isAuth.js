@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 const isAuth = (req, res, next) => {
   try {
-    const token = req.cookies?.token;
+    const token = req.cookies.token;
     if (!token) {
       return res.status(401).json({ message: "Token missing" });
     }
@@ -11,10 +11,8 @@ const isAuth = (req, res, next) => {
     req.userId = decoded.userId;
     next();
   } catch (error) {
-    if (error.name === "TokenExpiredError") {
-      return res.status(401).json({ message: "Token expired" });
-    }
-    return res.status(403).json({ message: "Invalid token" });
+    console.log(error)
+        return res.status(500).json({message:`isauth error ${error}`})
   }
 };
 
