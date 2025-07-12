@@ -1,80 +1,78 @@
-import genToken from "../config/token.js";
-import User from "../models/user.model.js";
-import bcrypt from "bcryptjs";
-
-export const signUp = async (req, res) => {
-  try {
-    const { userName, email, password } = req.body;
-
-    const userExists = await User.findOne({ $or: [{ email }, { userName }] });
-    if (userExists) {
-      return res.status(400).json({ message: "Username or email already exists" });
+import genToken from "../config/token.js"
+import User from "../models/user.model.js"
+import bcrypt from "bcryptjs"
+export const signUp=async (req,res)=>{
+   try {
+    const {userName,email,password}=req.body
+    const checkUserByUserName=await User.findOne({userName})
+    if(checkUserByUserName){
+        return res.status(400).json({message:"userName already exist"})
     }
-
-    if (!password || password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    const checkUserByEmail=await User.findOne({email})
+    if(checkUserByEmail){
+        return res.status(400).json({message:"email already exist"})
     }
+if(password.length<6){
+    return res.status(400).json({message:"password must be at least 6 characters"})
+}
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ userName, email, password: hashedPassword });
+const hashedPassword=await bcrypt.hash(password,10)
 
-    const token = genToken(user._id);
-    if (!token) return res.status(500).json({ message: "Token creation failed" });
+const user=await User.create({
+    userName,email,password:hashedPassword
+})
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite: "None" ,
-      secure: true,
-    });
+const token=await genToken(user._id)
 
-    res.status(201).json({
-      _id: user._id,
-      email: user.email,
-      userName: user.userName,
-    });
-  } catch (error) {
-    console.error("Signup error →", error);
-    res.status(500).json({ message: `Signup error: ${error.message}` });
-  }
-};
+res.cookie("token",token,{
+    httpOnly:true,
+    maxAge:7*24*60*60*1000,
+    sameSite:"Strict",
+    secure:false
+   })
 
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+   return res.status(201).json(user)
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "User does not exist" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Incorrect password" });
+   } catch (error) {
+    return res.status(500).json({message:`signup error ${error}`})
+   } 
+}
+export const login=async (req,res)=>{
+    try {
+     const {email,password}=req.body
+     const user=await User.findOne({email})
+     if(!user){
+         return res.status(400).json({message:"user does not exist"})
+     }
 
-    const token = genToken(user._id);
-    if (!token) return res.status(500).json({ message: "Token creation failed" });
+ const isMatch=await bcrypt.compare(password,user.password)
+ if(!isMatch){
+    return res.status(400).json({message:"incorrect password"})
+ }
+ 
+ const token=await genToken(user._id)
+ 
+ res.cookie("token",token,{
+     httpOnly:true,
+     maxAge:7*24*60*60*1000,
+     sameSite:"Strict",
+     secure:false
+    })
+ 
+    return res.status(200).json(user)
+ 
+ 
+    } catch (error) {
+     return res.status(500).json({message:`login error ${error}`})
+    } 
+ }
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      sameSite:"None",
-      secure: true,
-    });
-
-    res.status(200).json({
-      _id: user._id,
-      email: user.email,
-      userName: user.userName,
-    });
-  } catch (error) {
-    console.error("Login error →", error);
-    res.status(500).json({ message: `Login error: ${error.message}` });
-  }
-};
-
-export const logOut = (req, res) => {
-  try {
-    res.clearCookie("token");
-    res.status(200).json({ message: "Logged out successfully" });
-  } catch (error) {
-    res.status(500).json({ message: `Logout error: ${error.message}` });
-  }
-};
+ export const logOut=async (req,res)=>{
+    try {
+        res.clearCookie("token")
+        return res.status(200).json({message:"log out successfully"})
+    } catch (error) {
+        return res.status(500).json({message:`logout error ${error}`})
+    }
+ }
