@@ -28,20 +28,17 @@ function SignUp() {
         { withCredentials: true }
       );
 
-      const { token, user } = response.data;
-
-      // ✅ Store token in localStorage
-      localStorage.setItem("token", token);
+     
 
       // ✅ Update Redux state
       dispatch(setUserData(user));
-
+      navigate("/profile");
       // Clear input fields
       setUserName("");
       setEmail("");
       setPassword("");
-
-      navigate("/profile");
+      setLoading(false)
+      setErr(false)
     } catch (error) {
       console.error("Signup error:", error);
       const msg =
