@@ -24,11 +24,6 @@ function Login() {
         { withCredentials: true }
       );
 
-      // ✅ Save token to localStorage
-      if (result.data.token) {
-        localStorage.setItem("token", result.data.token);
-      }
-
       dispatch(setUserData(result.data));
       dispatch(setSelectedUser(null));
       navigate("/");
