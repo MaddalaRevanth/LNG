@@ -23,6 +23,7 @@ function Login() {
         { email, password },
         { withCredentials: true }
       );
+
       dispatch(setUserData(result.data));
       dispatch(setSelectedUser(null));
       navigate("/");
@@ -31,7 +32,7 @@ function Login() {
       setLoading(false);
       setErr("");
     } catch (error) {
-      console.log(error);
+      console.log("Login Error →", error);
       setLoading(false);
       setErr(error?.response?.data?.message || "Login failed");
     }
@@ -40,7 +41,6 @@ function Login() {
   return (
     <div className="w-full h-[100vh] bg-slate-200 flex items-center justify-center">
       <div className="w-full max-w-[500px] h-[600px] bg-white rounded-lg shadow-gray-400 shadow-lg flex flex-col gap-[30px]">
-        {/* Header with logo image */}
         <div className="w-full h-[200px] bg-[#333333] rounded-b-[30%] shadow-gray-400 shadow-lg flex flex-col items-center justify-center gap-2">
           <img
             src="/logo.jpg"
@@ -50,7 +50,6 @@ function Login() {
           <p className="text-white text-[14px] italic">Welcome back!</p>
         </div>
 
-        {/* Login Form */}
         <form
           className="w-full flex flex-col gap-[20px] items-center"
           onSubmit={handleLogin}

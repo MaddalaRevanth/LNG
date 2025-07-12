@@ -2,49 +2,58 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { serverUrl } from "../main";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setUserData } from "../redux/userSlice";
 
 function SignUp() {
-  let navigate = useNavigate();
-  let [show, setShow] = useState(false);
-  let [userName, setUserName] = useState("");
-  let [email, setEmail] = useState("");
-  let [password, setPassword] = useState("");
-  let [loading, setLoading] = useState(false);
-  let [err, setErr] = useState("");
-  let dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [show, setShow] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErr("");
+
     try {
-      let result = await axios.post(
+      const response = await axios.post(
         `${serverUrl}/api/auth/signup`,
-        {
-          userName,
-          email,
-          password,
-        },
+        { userName, email, password },
         { withCredentials: true }
       );
-      dispatch(setUserData(result.data));
+
+     
+
+      // ✅ Update Redux state
+      dispatch(setUserData(user));
       navigate("/profile");
+      // Clear input fields
+      setUserName("");
       setEmail("");
       setPassword("");
-      setLoading(false);
-      setErr("");
+      setLoading(false)
+      setErr(false)
     } catch (error) {
-      console.log(error);
+      console.error("Signup error:", error);
+      const msg =
+        error?.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      setErr(msg);
+    } finally {
       setLoading(false);
-      setErr(error?.response?.data?.message);
     }
   };
 
   return (
     <div className="w-full h-[100vh] bg-slate-200 flex items-center justify-center">
       <div className="w-full max-w-[500px] h-[600px] bg-white rounded-lg shadow-gray-400 shadow-lg flex flex-col gap-[30px]">
-        {/* Header with Logo and Caption */}
+        {/* Header */}
         <div className="w-full h-[220px] bg-[#333333] rounded-b-[30%] shadow-gray-400 shadow-lg flex flex-col items-center justify-center gap-2">
           <img
             src="/logo.jpg"
@@ -65,14 +74,14 @@ function SignUp() {
           <input
             type="text"
             placeholder="username"
-            className="w-[90%] h-[50px] outline-none border-2 border-[#333333] px-[20px] py-[10px] bg-[white] rounded-lg shadow-gray-200 shadow-lg text-gray-700 text-[19px]"
+            className="w-[90%] h-[50px] outline-none border-2 border-[#333333] px-[20px] py-[10px] bg-white rounded-lg shadow-gray-200 shadow-lg text-gray-700 text-[19px]"
             onChange={(e) => setUserName(e.target.value)}
             value={userName}
           />
           <input
             type="email"
             placeholder="email"
-            className="w-[90%] h-[50px] outline-none border-2 border-[#333333] px-[20px] py-[10px] bg-[white] rounded-lg shadow-gray-200 shadow-lg text-gray-700 text-[19px]"
+            className="w-[90%] h-[50px] outline-none border-2 border-[#333333] px-[20px] py-[10px] bg-white rounded-lg shadow-gray-200 shadow-lg text-gray-700 text-[19px]"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
           />
@@ -80,7 +89,7 @@ function SignUp() {
             <input
               type={show ? "text" : "password"}
               placeholder="password"
-              className="w-full h-full outline-none px-[20px] py-[10px] bg-[white] text-gray-700 text-[19px]"
+              className="w-full h-full outline-none px-[20px] py-[10px] bg-white text-gray-700 text-[19px]"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
             />

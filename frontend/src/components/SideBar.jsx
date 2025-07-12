@@ -129,7 +129,10 @@ function SideBar() {
               />
               <RxCross2
                 className="w-[25px] h-[25px] cursor-pointer"
-                onClick={() => setSearch(false)}
+                onClick={() => {
+                  setSearch(false);
+                  setInput("");
+                }}
               />
             </form>
           )}

@@ -34,12 +34,15 @@ function Profile() {
       if (backendImage) {
         formData.append("image", backendImage);
       }
-      let result = await axios.put(`${serverUrl}/api/user/profile`, formData, { withCredentials: true });
+
+     
+        let result = await axios.put(`${serverUrl}/api/user/profile`, formData, { withCredentials: true });
+
       setSaving(false);
       dispatch(setUserData(result.data));
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.log("Profile update failed →", error?.response?.data || error);
       setSaving(false);
     }
   };
