@@ -35,14 +35,7 @@ function Profile() {
         formData.append("image", backendImage);
       }
 
-      const token = localStorage.getItem("token"); // ✅ Get token from localStorage
-
-      const result = await axios.put(`${serverUrl}/api/user/profile`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ Add token to headers
-        },
-        withCredentials: true,
-      });
+     
 
       setSaving(false);
       dispatch(setUserData(result.data));
